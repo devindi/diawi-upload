@@ -1,0 +1,7 @@
+diawi-upload-local/
+
+#IDEA
+.idea/
+
+#GRADLE
+.gradle/

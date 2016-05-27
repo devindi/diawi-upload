@@ -1,0 +1,42 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.3.4'
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'com.novoda.bintray-release'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.android.tools.build:gradle:2.1.0'
+}
+
+group='com.devindi'
+version='1.0'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('../diawi-upload-local'))
+        }
+    }
+}
+
+publish {
+    groupId = 'com.devindi'
+    artifactId = 'diawi-upload'
+    publishVersion = '1.0'
+    desc = 'Gradle plugin for uploading your builds to diawi.com'
+    licences = ['GPL-3.0']
+    website = 'https://github.com/devindi/diawi-upload'
+}

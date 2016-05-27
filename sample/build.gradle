@@ -1,0 +1,56 @@
+buildscript {
+	repositories{
+		maven {
+			jcenter()
+        	url uri('../diawi-upload-local')
+		}
+	}
+	dependencies{
+		classpath 'com.devindi:diawi-upload:1.0'
+	}
+}
+
+apply plugin: 'com.android.application'
+
+
+android{
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+    defaultConfig {
+
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        stage {
+
+        }
+        production{
+
+        }
+        mock{
+
+        }
+    }
+
+
+}
+
+apply plugin: 'diawi-upload'
+
+diawi {
+    standardOutput = new FileOutputStream(project.file('link'))
+}
