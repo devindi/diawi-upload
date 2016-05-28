@@ -37,6 +37,6 @@ You can provide diawi token at diawi section or at local.propeties file, propert
 
 ## FAQ
 
-This plugin requires to add diawi's ssl certificate.
-1. Go to [https://upload.diawi.com](upload.diawi.com) and save crtificate to your hdd
+This plugin requires to add diawi's ssl certificate.  
+1. Go to [upload.diawi.com](https://upload.diawi.com) and save crtificate to your hdd  
 2. Run 'sudo keytool -import -alias diawi -keystore %PATH_TO_JAVA_HOME%/jre/lib/security/cacerts -file %PATH_TO_CERTIFICATE%'
