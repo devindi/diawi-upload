@@ -22,7 +22,7 @@ dependencies {
 }
 
 group='com.devindi'
-version='1.0'
+version='1.1'
 
 uploadArchives {
     repositories {
@@ -35,7 +35,7 @@ uploadArchives {
 publish {
     groupId = 'com.devindi'
     artifactId = 'diawi-upload'
-    publishVersion = '1.0'
+    publishVersion = '1.1'
     desc = 'Gradle plugin for uploading your builds to diawi.com'
     licences = ['GPL-3.0']
     website = 'https://github.com/devindi/diawi-upload'
