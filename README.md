@@ -26,17 +26,26 @@ apply plugin: 'diawi-upload'
 ```groovy
 diawi {
   token //diawi token.  
-  standardOutput //OutputStream in which links will be printed  
+  standardOutput //OutputStream in which links will be printed 
+  comment = 'Comment on the build'
+  password = 'installation password' 
+  callbackEmail = 'me@company.com'
+  callbackUrl = 'http://www.myintranet.com/my-diawi-callback-url'
+  wallOfApps = false
 }
 ```
+
+###Hint
+You can provide any parameter via arguments
+```groovy
+diawi {
+  password = diawiPswrd 
+}
+```
+And run task with argument like ```./gradlew diawiPublishMockDebug -PdiawiPswrd='SECRET_STUFF' ```
+
 
 ## Tasks
 
 Plugin creates task for every build variant.
 You can provide diawi token at diawi section or at local.propeties file, property key is 'diawi.token'
-
-## FAQ
-
-This plugin requires to add diawi's ssl certificate.  
-1. Go to [upload.diawi.com](https://upload.diawi.com) and save crtificate to your hdd  
-2. Run 'sudo keytool -import -alias diawi -keystore %PATH_TO_JAVA_HOME%/jre/lib/security/cacerts -file %PATH_TO_CERTIFICATE%'
