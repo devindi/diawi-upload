@@ -1,29 +1,63 @@
 package com.devindi.gradle.diawi.tools
 
 import groovy.json.JsonSlurper
-import org.gradle.api.tasks.StopActionException
 
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import java.security.SecureRandom
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
 
 class Publisher {
 
+    //Workaround to avoid SSLHandshakeException
+    static void hackSecurity() throws Exception {
+        TrustManager[] trustManagers = [
+                new X509TrustManager(){
+                    @Override
+                    void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                    }
+
+                    @Override
+                    void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+                    }
+
+                    @Override
+                    X509Certificate[] getAcceptedIssuers() {
+                        return null
+                    }
+                }
+        ]
+        SSLContext context = SSLContext.getInstance("SSL")
+        context.init(null, trustManagers, new SecureRandom())
+        HttpsURLConnection.setDefaultSSLSocketFactory(context.socketFactory)
+    }
+
     static String publish(String token, File file) {
         if (!file.exists()) {
-            throw new StopActionException("Cant find file: ${file.path}")
+            throw new IllegalArgumentException("Can't find file: ${file.path}")
         }
 
         def post
         try {
             post = NetworkHelper.sendPost(token, "", file)
             if (post.code != 200) {
-                throw new StopActionException(post.responseString)
+                throw new IllegalArgumentException(post.responseString)
             }
             def slurper = new JsonSlurper()
             def result = slurper.parseText(post.responseString)
-            return result.job
+            def jobId = result.job
+            if (!jobId) {
+                throw new IllegalStateException("Can't parse job id. Response is ${post.responseString}")
+            }
+            return jobId
         } catch (SSLHandshakeException ex) {
-            //sudo keytool -import -alias diawi -keystore /usr/lib/jvm/jdk1.8.0/jre/lib/security/cacerts -file /home/devindi/upload.diawi.com
-            throw new StopActionException('Install SSL certificate for upload.diawi.com')
+            throw new IllegalArgumentException("Can't connect to https://upload.diawi.com", ex)
         }
     }
 
@@ -31,16 +65,16 @@ class Publisher {
         try {
             def result = NetworkHelper.sendGet("", "status?token=$token&job=$jobId")
             if (result.code != 200) {
-                throw new StopActionException(result.responseString)
+                throw new IllegalArgumentException(result.responseString)
             }
             def slurper = new JsonSlurper()
             def json = slurper.parseText(result.responseString)
             if (json.status == 4000) {
-                throw new StopActionException(result.responseString)
+                throw new IllegalArgumentException(result.responseString)
             }
             return json.link
         } catch (SSLHandshakeException ex) {
-            throw new StopActionException('Install SSL certificate for upload.diawi.com')
+            throw new IllegalArgumentException("Can't connect to https://upload.diawi.com", ex)
         }
     }
 }

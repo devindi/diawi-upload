@@ -5,7 +5,6 @@ import com.devindi.gradle.diawi.tools.PropertyHelper
 import com.devindi.gradle.diawi.tools.Publisher
 import com.android.build.gradle.api.ApplicationVariant
 import org.gradle.api.*
-import org.gradle.api.tasks.StopActionException
 import org.gradle.api.tasks.TaskAction
 
 class DiawiUploadTask extends DefaultTask {
@@ -20,13 +19,13 @@ class DiawiUploadTask extends DefaultTask {
             token = PropertyHelper.readProperties(project.file('local.properties'))['diawi.token']
         }
         if (!token) {
-            token = System.console().readLine('> Enter diawi token please: ')
+            token = System.console().readLine('>Define diawi token with diawi.token in the local.properties file or type it here: ')
         }
 
+
+        Publisher.hackSecurity()
+
         def jobId = Publisher.publish(token, variant.outputs[0].outputFile)
-        if (!jobId) {
-            throw new StopActionException('APK uploading failed')
-        }
         String link
         def counter = 0
         while (!link && counter < 10) {
@@ -45,7 +44,7 @@ class DiawiUploadTask extends DefaultTask {
                 uploadExtension.standardOutput.flush()
             }
         } else {
-            throw new StopActionException('APK processing failed')
+            throw new IllegalArgumentException("Can't get link from diawi. Job id is $jobId Also you can check diawi dashboard https://dashboard.diawi.com/apps")
         }
     }
 }
