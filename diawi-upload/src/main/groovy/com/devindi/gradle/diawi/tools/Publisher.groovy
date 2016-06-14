@@ -38,14 +38,14 @@ class Publisher {
         HttpsURLConnection.setDefaultSSLSocketFactory(context.socketFactory)
     }
 
-    static String publish(String token, File file) {
+    static String publish(String token, File file, String password = null, String comment = null, String callbackUrl = null, String callbackEmail = null, boolean wallOfApps = true) {
         if (!file.exists()) {
             throw new IllegalArgumentException("Can't find file: ${file.path}")
         }
 
         def post
         try {
-            post = NetworkHelper.sendPost(token, "", file)
+            post = NetworkHelper.sendPost(token, file, wallOfApps, password, comment, callbackUrl, callbackEmail)
             if (post.code != 200) {
                 throw new IllegalArgumentException(post.responseString)
             }
@@ -63,7 +63,7 @@ class Publisher {
 
     static String checkURL(String token, String jobId) {
         try {
-            def result = NetworkHelper.sendGet("", "status?token=$token&job=$jobId")
+            def result = NetworkHelper.sendGet("status?token=$token&job=$jobId")
             if (result.code != 200) {
                 throw new IllegalArgumentException(result.responseString)
             }

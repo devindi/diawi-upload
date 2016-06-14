@@ -14,7 +14,7 @@ class DiawiUploadTask extends DefaultTask {
 
     @TaskAction
     def upload() {
-        def token = uploadExtension.token
+        String token = uploadExtension.token
         if (!token) {
             token = PropertyHelper.readProperties(project.file('local.properties'))['diawi.token']
         }
@@ -25,7 +25,7 @@ class DiawiUploadTask extends DefaultTask {
 
         Publisher.hackSecurity()
 
-        def jobId = Publisher.publish(token, variant.outputs[0].outputFile)
+        def jobId = Publisher.publish(token, variant.outputs[0].outputFile, uploadExtension.password, uploadExtension.comment, uploadExtension.callbackUrl, uploadExtension.callbackEmail, uploadExtension.wallOfApps)
         String link
         def counter = 0
         while (!link && counter < 10) {

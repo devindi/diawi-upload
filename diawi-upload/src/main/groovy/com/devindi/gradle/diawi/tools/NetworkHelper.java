@@ -1,5 +1,7 @@
 package com.devindi.gradle.diawi.tools;
 
+import org.gradle.api.Nullable;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -13,9 +15,9 @@ public abstract class NetworkHelper {
     private static final String crlf = "\r\n";
     private static final String twoHyphens = "--";
 
-    public static RequestResult sendPost(String token, String url, File file) throws IOException {
-        ALog.debug("POST request %s / %s. \n", HOST + url, file.getAbsolutePath());
-        URL requestUrl = new URL(HOST + url);
+    public static RequestResult sendPost(String token, File file, boolean wallOfApps, @Nullable String password, @Nullable String comment, @Nullable String callbackUrl, @Nullable String callbackEmail) throws IOException {
+        ALog.debug("POST request %s / %s. \n", HOST, file.getAbsolutePath());
+        URL requestUrl = new URL(HOST);
         HttpsURLConnection connection = (HttpsURLConnection) requestUrl.openConnection();
         connection.setUseCaches(false);
         connection.setDoOutput(true);
@@ -27,12 +29,17 @@ public abstract class NetworkHelper {
 
         DataOutputStream request = new DataOutputStream(connection.getOutputStream());
 
-        request.writeBytes(twoHyphens + boundary + crlf);
-        request.writeBytes("Content-Disposition: form-data; name=\"token\""+ crlf);
-        request.writeBytes("Content-Type: text/plain; charset=UTF-8" + crlf);
-        request.writeBytes(crlf);
-        request.writeBytes(token+ crlf);
-        request.flush();
+        addStringPart(request, "token", token);
+        addStringPart(request, "wall_of_apps", wallOfApps ? "1" : "0");
+        if (password != null)
+            addStringPart(request, "password", password);
+        if (comment != null)
+            addStringPart(request, "comment", comment);
+        if (callbackUrl != null)
+            addStringPart(request, "callback_url", callbackUrl);
+        if (callbackEmail != null)
+            addStringPart(request, "callback_email", callbackEmail);
+
 
         String fileName = file.getName();
         request.writeBytes(twoHyphens + boundary + crlf);
@@ -55,14 +62,22 @@ public abstract class NetworkHelper {
         return getRequestResult(connection);
     }
 
-    public static RequestResult sendGet(String token, String url) throws IOException {
+    public static RequestResult sendGet(String url) throws IOException {
         ALog.debug("GET request %s.", HOST + url);
         URL requestUrl = new URL(HOST + url);
         HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
         connection.setRequestMethod("GET");
-        if (token != null)
-            connection.addRequestProperty("Authorization", token);
         return getRequestResult(connection);
+    }
+
+    private static DataOutputStream addStringPart(DataOutputStream stream, String name, String data) throws IOException {
+        stream.writeBytes(twoHyphens + boundary + crlf);
+        stream.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"" + crlf);
+        stream.writeBytes("Content-Type: text/plain; charset=UTF-8" + crlf);
+        stream.writeBytes(crlf);
+        stream.writeBytes(data + crlf);
+        stream.flush();
+        return stream;
     }
 
     private static RequestResult getRequestResult(HttpURLConnection connection) throws IOException {
