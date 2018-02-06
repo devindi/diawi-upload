@@ -1,11 +1,11 @@
 package com.devindi.gradle.diawi.dsl
 
 class DiawiUploadExtension {
-    String token
-    OutputStream standardOutput
+    def String token
+    def OutputStream standardOutput
     boolean wallOfApps
-    String password
-    String comment
-    String callbackEmail
-    String callbackUrl
+    def String password
+    def String comment
+    def String callbackEmail
+    def String callbackUrl
 }
