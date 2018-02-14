@@ -13,7 +13,7 @@ buildscript {
 	  jcenter()
 	}
 	dependencies{
-		classpath 'com.devindi:diawi-upload:1.0'
+		classpath 'com.devindi:diawi-upload:1.1'
 	}
 }
 
