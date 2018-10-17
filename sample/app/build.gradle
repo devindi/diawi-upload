@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.devindi.sample"
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+    flavorDimensions "env"
+    productFlavors {
+        stage {
+            dimension "env"
+        }
+        production {
+            dimension "env"
+        }
+        mock {
+            dimension "env"
+        }
+    }
+}
+
+apply plugin: 'diawi-upload'
+
+diawi {
+    standardOutput = new FileOutputStream(project.file('link'))
+    comment = 'Comment on the build'
+    password = '123'
+    callbackEmail = 'me@example.com'
+    callbackUrl = 'http://www.myintranet.com/my-diawi-callback-url'
+    wallOfApps = false
+}
