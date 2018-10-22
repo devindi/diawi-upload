@@ -1,8 +1,12 @@
 package com.devindi.gradle.diawi
 
+import com.android.build.gradle.api.BaseVariant
+import com.devindi.gradle.diawi.diawi.DiawiClient
 import com.devindi.gradle.diawi.dsl.DiawiUploadExtension
 import com.devindi.gradle.diawi.task.DiawiUploadTask
-import org.apache.commons.lang.StringUtils
+import groovy.json.JsonSlurper
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.gradle.api.*
 import com.android.build.gradle.AppPlugin
 
@@ -17,25 +21,30 @@ class DiawiUploadPlugin implements Plugin<Project> {
 
         def extension = project.extensions.create('diawi', DiawiUploadExtension)
 
-        project.android.applicationVariants.all { variant ->
-
-            def buildTypeName = variant.buildType.name.capitalize()
-
-            def productFlavorNames = variant.productFlavors.collect { it.name.capitalize() }
-            if (productFlavorNames.isEmpty()) {
-                productFlavorNames = [""]
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            void log(String message) {
+                extension.standardOutput.write(message.bytes)
+                extension.standardOutput.write("\r\n".bytes)
+                extension.standardOutput.flush()
             }
-            def productFlavorName = productFlavorNames.join('')
+        })
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build()
 
-            def variationName = "${productFlavorName}${buildTypeName}"
+        project.android.applicationVariants.all { BaseVariant variant ->
+            def variantName = variant.name
 
-            def diawiUploadTaskName = "diawiPublish${variationName}"
+            def diawiUploadTaskName = "diawiPublish$variantName"
 
-            def diawiUploadTask = project.tasks.create(diawiUploadTaskName, DiawiUploadTask)
-            diawiUploadTask.description "Publish $variationName build to diawi"
-            diawiUploadTask.group 'Diawi'
-            diawiUploadTask.variant variant
-            diawiUploadTask.uploadExtension extension
+            DiawiUploadTask diawiUploadTask = project.tasks.create(diawiUploadTaskName, DiawiUploadTask) as DiawiUploadTask
+            diawiUploadTask.description = "Publish $variantName build to diawi"
+            diawiUploadTask.group = 'Diawi'
+            diawiUploadTask.variant = variant
+            diawiUploadTask.uploadExtension = extension
+            diawiUploadTask.client = new DiawiClient(client, new JsonSlurper())
         }
 	}
 }
