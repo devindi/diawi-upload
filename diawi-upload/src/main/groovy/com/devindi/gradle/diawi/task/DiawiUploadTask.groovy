@@ -12,7 +12,7 @@ class DiawiUploadTask extends DefaultTask {
     DiawiClient client
     BaseVariant variant
     DiawiUploadExtension uploadExtension
-    BlockingPollingService pollingService = new BlockingPollingService()
+    BlockingPollingService pollingService
 
     @TaskAction
     def upload() {

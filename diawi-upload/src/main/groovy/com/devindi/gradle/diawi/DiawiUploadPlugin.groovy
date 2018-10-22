@@ -4,6 +4,7 @@ import com.android.build.gradle.api.BaseVariant
 import com.devindi.gradle.diawi.diawi.DiawiClient
 import com.devindi.gradle.diawi.dsl.DiawiUploadExtension
 import com.devindi.gradle.diawi.task.DiawiUploadTask
+import com.devindi.gradle.diawi.task.internal.BlockingPollingService
 import groovy.json.JsonSlurper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,9 +25,10 @@ class DiawiUploadPlugin implements Plugin<Project> {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             void log(String message) {
-                extension.standardOutput.write(message.bytes)
-                extension.standardOutput.write("\r\n".bytes)
-                extension.standardOutput.flush()
+                // Skip file content
+                if(!message.contains("�")) {
+                    project.logger.debug(message)
+                }
             }
         })
         logging.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -45,6 +47,7 @@ class DiawiUploadPlugin implements Plugin<Project> {
             diawiUploadTask.variant = variant
             diawiUploadTask.uploadExtension = extension
             diawiUploadTask.client = new DiawiClient(client, new JsonSlurper())
+            diawiUploadTask.pollingService = new BlockingPollingService()
         }
 	}
 }
