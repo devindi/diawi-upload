@@ -42,6 +42,9 @@ apply plugin: 'diawi-upload'
 |{hash}|Diawi file hash|
 |{link}|Diawi installation link|
 |{file}|Original file name|
+|{badge_url}|badge url|
+|{badge_html}|Diawi badge as HTML-code|
+|{badge_md}|Diawi badge as markdown-code|
 
 ### Example:
 ```groovy
