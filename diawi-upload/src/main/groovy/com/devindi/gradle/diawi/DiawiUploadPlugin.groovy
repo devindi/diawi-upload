@@ -5,6 +5,7 @@ import com.devindi.gradle.diawi.diawi.DiawiClient
 import com.devindi.gradle.diawi.dsl.DiawiUploadExtension
 import com.devindi.gradle.diawi.task.DiawiUploadTask
 import com.devindi.gradle.diawi.task.internal.BlockingPollingService
+import com.devindi.gradle.diawi.task.internal.ResultFormat
 import groovy.json.JsonSlurper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -48,6 +49,7 @@ class DiawiUploadPlugin implements Plugin<Project> {
             diawiUploadTask.uploadExtension = extension
             diawiUploadTask.client = new DiawiClient(client, new JsonSlurper())
             diawiUploadTask.pollingService = new BlockingPollingService()
+            diawiUploadTask.resultFormat = new ResultFormat()
         }
 	}
 }
