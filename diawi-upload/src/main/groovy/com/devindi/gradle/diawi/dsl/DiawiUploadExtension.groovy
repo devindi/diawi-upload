@@ -8,4 +8,5 @@ class DiawiUploadExtension {
     String comment
     String callbackEmail
     String callbackUrl
+    String resultFormat = "{file} uploaded at {date}. Diawi hash: {hash}"
 }
