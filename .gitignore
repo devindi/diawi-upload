@@ -5,3 +5,5 @@ diawi-upload-local/
 
 #GRADLE
 .gradle/
+
+build/
