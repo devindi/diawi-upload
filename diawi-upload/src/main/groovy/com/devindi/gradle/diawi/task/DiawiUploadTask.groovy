@@ -34,7 +34,10 @@ class DiawiUploadTask extends DefaultTask {
                 new ReplacementItem("date", new Date().toString()),
                 new ReplacementItem("hash", hash),
                 new ReplacementItem("link", "https://install.diawi.com/$hash"),
-                new ReplacementItem("file", variant.outputs[0].outputFile.name)
+                new ReplacementItem("file", variant.outputs[0].outputFile.name),
+                new ReplacementItem("badge_url", "https://api.diawi.com/badge/$hash/available"),
+                new ReplacementItem("badge_html", "<a href=\"https://i.diawi.com/$hash\" title=\"Diawi link\"><img src=\"https://api.diawi.com/badge/$hash/available\" alt=\"Diawi link\"/></a>"),
+                new ReplacementItem("badge_md", "[![Diawi link](https://api.diawi.com/badge/$hash/available)](https://i.diawi.com/$hash)")
         ]
         def formattedResult = resultFormat.format(uploadExtension.resultFormat, replacements)
 
