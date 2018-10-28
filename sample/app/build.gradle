@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'diawi-upload'
 
 android {
     compileSdkVersion 28
@@ -22,8 +23,6 @@ android {
         }
     }
 }
-
-apply plugin: 'diawi-upload'
 
 diawi {
     standardOutput = new FileOutputStream(project.file('link'))
