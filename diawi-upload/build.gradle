@@ -21,6 +21,9 @@ dependencies {
     compile 'com.android.tools.build:gradle:2.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+
+    testCompile localGroovy()
+    testCompile "org.mockito:mockito-core:2.23.0"
 }
 
 group='com.devindi'

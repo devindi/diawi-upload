@@ -2,10 +2,12 @@ package com.devindi.gradle.diawi.task
 
 import com.android.build.gradle.api.BaseVariant
 import com.devindi.gradle.diawi.diawi.DiawiClient
+import com.devindi.gradle.diawi.diawi.UploadParams
 import com.devindi.gradle.diawi.dsl.DiawiUploadExtension
 import com.devindi.gradle.diawi.task.internal.BlockingPollingService
 import com.devindi.gradle.diawi.task.internal.ReplacementItem
 import com.devindi.gradle.diawi.task.internal.ResultFormat
+import com.devindi.gradle.diawi.task.internal.UploadParamsFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
@@ -16,10 +18,14 @@ class DiawiUploadTask extends DefaultTask {
     DiawiUploadExtension uploadExtension
     BlockingPollingService pollingService
     ResultFormat resultFormat
+    UploadParamsFactory paramsFactory
 
+    @SuppressWarnings("unused")
     @TaskAction
     def upload() {
-        def jobId = client.upload(variant.outputs[0].outputFile, uploadExtension)
+        UploadParams params = paramsFactory.createParams(uploadExtension)
+
+        def jobId = client.upload(variant.outputs[0].outputFile, params)
 
         def hash = pollingService.blockingGet(
                 { client.checkJobStatus(uploadExtension.token, jobId) },
@@ -28,9 +34,16 @@ class DiawiUploadTask extends DefaultTask {
                     throw new IllegalArgumentException("Can't get link from diawi. Job id is $jobId Also you can check diawi dashboard https://dashboard.diawi.com/apps")
                 })
 
+        handleDiawiHash(hash)
+    }
+
+    private void handleDiawiHash(String hash) {
         println "Build uploaded OK. Hash = $hash"
 
-        def replacements = [
+        String outputFormat = uploadExtension.output.format
+        OutputStream outputStream = findOutputStream()
+
+        List<ReplacementItem> replacements = [
                 new ReplacementItem("date", new Date().toString()),
                 new ReplacementItem("hash", hash),
                 new ReplacementItem("link", "https://install.diawi.com/$hash"),
@@ -39,11 +52,32 @@ class DiawiUploadTask extends DefaultTask {
                 new ReplacementItem("badge_html", "<a href=\"https://i.diawi.com/$hash\" title=\"Diawi link\"><img src=\"https://api.diawi.com/badge/$hash/available\" alt=\"Diawi link\"/></a>"),
                 new ReplacementItem("badge_md", "[![Diawi link](https://api.diawi.com/badge/$hash/available)](https://i.diawi.com/$hash)")
         ]
-        def formattedResult = resultFormat.format(uploadExtension.resultFormat, replacements)
 
-        if (uploadExtension.standardOutput) {
-            uploadExtension.standardOutput.write(formattedResult.bytes)
-            uploadExtension.standardOutput.flush()
+        def formattedOutput = resultFormat.format(outputFormat, replacements)
+
+        outputStream.write(formattedOutput.bytes)
+        outputStream.flush()
+    }
+
+    private OutputStream findOutputStream() {
+        def value = uploadExtension.output.stream
+        def backport = uploadExtension.standardOutput
+
+        if (value != null && backport == null) {
+            // new dsl used, ok
+            return value
         }
+
+        if (value == null && backport != null) {
+            logger.warn("Property 'diawi.standartOutput' is deprecated and will be removed in future. Use diawi.output.stream instead")
+            return backport
+        }
+
+        if (value != backport) {
+            logger.warn("Property 'diawi.standartOutput' is deprecated and will be removed in future. Use diawi.output.stream instead. Value of 'diawi.standartOutput' ignored")
+            return value
+        }
+
+        throw new IllegalStateException("Failed to resolve output stream")
     }
 }

@@ -25,8 +25,7 @@ android {
 }
 
 diawi {
-    standardOutput = new FileOutputStream(project.file('link'))
     comment = 'Awesome update'
     wallOfApps = false
-    resultFormat = "Link: {link}. File: {file}.\n{badge_url}\n{badge_html}\n{badge_md}"
+    output.format = "Link: {link}. File: {file}.\n{badge_url}\n{badge_html}\n{badge_md}"
 }
