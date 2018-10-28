@@ -17,7 +17,7 @@ buildscript {
 	}
 }
 
-//Place this line after android{} section
+// Apply plugin after android application
 apply plugin: 'diawi-upload'
 ```
 
