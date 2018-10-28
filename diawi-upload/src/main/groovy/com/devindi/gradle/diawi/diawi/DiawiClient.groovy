@@ -1,6 +1,5 @@
 package com.devindi.gradle.diawi.diawi
 
-import com.devindi.gradle.diawi.dsl.DiawiUploadExtension
 import groovy.json.JsonSlurper
 import okhttp3.HttpUrl
 import okhttp3.MultipartBody
@@ -23,28 +22,28 @@ class DiawiClient {
      * Upload file to diawi.
      *
      * @param apkFile file to upload
-     * @param config upload settings. Token and wallOfApps are mandatory
+     * @param params upload settings. Token and wallOfApps are mandatory
      * @return diawi file processing job identifier
      */
-    String upload(File apkFile, DiawiUploadExtension config) {
+    String upload(File apkFile, UploadParams params) {
         if (!apkFile.exists()) {
             throw new FileNotFoundException(apkFile.absolutePath)
         }
         MultipartBody.Builder requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("token", config.token)
-            .addFormDataPart("wall_of_apps", config.wallOfApps ? '0' : '1')
-        if (config.password != null) {
-            requestBody.addFormDataPart("password", config.password)
+            .addFormDataPart("token", params.token)
+            .addFormDataPart("wall_of_apps", params.wallOfApps ? '0' : '1')
+        if (params.password != null) {
+            requestBody.addFormDataPart("password", params.password)
         }
-        if (config.comment != null) {
-            requestBody.addFormDataPart("comment", config.comment)
+        if (params.comment != null) {
+            requestBody.addFormDataPart("comment", params.comment)
         }
-        if (config.callbackUrl != null) {
-            requestBody.addFormDataPart("callback_url", config.callbackUrl)
+        if (params.callbackUrl != null) {
+            requestBody.addFormDataPart("callback_url", params.callbackUrl)
         }
-        if (config.callbackEmail != null) {
-            requestBody.addFormDataPart("callback_email", config.callbackUrl)
+        if (params.callbackEmails != null) {
+            requestBody.addFormDataPart("callback_email", params.callbackEmails)
         }
         requestBody.addFormDataPart("file", apkFile.name, RequestBody.create(null, apkFile))
 
