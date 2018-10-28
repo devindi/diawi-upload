@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.novoda:bintray-release:0.8.1'
     }
 }
 
@@ -27,7 +27,7 @@ dependencies {
 }
 
 group='com.devindi'
-version='1.1-SNAPSHOT'
+version='1.2'
 
 uploadArchives {
     repositories {
@@ -38,10 +38,11 @@ uploadArchives {
 }
 
 publish {
+    userOrg = 'devindi'
     groupId = 'com.devindi'
     artifactId = 'diawi-upload'
-    publishVersion = '1.1-SNAPSHOT'
+    publishVersion = '1.2'
     desc = 'Gradle plugin for uploading your builds to diawi.com'
-    licences = ['GPL-3.0']
+    licences = ['Apache-2.0']
     website = 'https://github.com/devindi/diawi-upload'
 }
