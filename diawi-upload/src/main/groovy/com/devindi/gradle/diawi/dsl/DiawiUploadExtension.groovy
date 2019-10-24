@@ -10,8 +10,6 @@ class DiawiUploadExtension {
 
     // those props will be removed at version 2.0
     @Deprecated
-    OutputStream standardOutput
-    @Deprecated
     String callbackEmail
     @Deprecated
     String callbackUrl
