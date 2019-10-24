@@ -14,15 +14,17 @@ apply plugin: 'com.novoda.bintray-release'
 repositories {
     mavenCentral()
     jcenter()
+    google()
 }
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:2.1.0'
+    compile 'com.android.tools.build:gradle:3.5.1'
     compile 'com.squareup.okhttp3:okhttp:3.11.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.11.0'
 
     testCompile localGroovy()
+    testCompile "junit:junit:4.11"
     testCompile "org.mockito:mockito-core:2.23.0"
 }
 
