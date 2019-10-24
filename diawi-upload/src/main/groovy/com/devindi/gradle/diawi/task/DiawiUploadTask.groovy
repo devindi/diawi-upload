@@ -41,7 +41,7 @@ class DiawiUploadTask extends DefaultTask {
         println "Build uploaded OK. Hash = $hash"
 
         String outputFormat = uploadExtension.output.format
-        OutputStream outputStream = findOutputStream()
+        OutputStream outputStream = uploadExtension.output.stream
 
         List<ReplacementItem> replacements = [
                 new ReplacementItem("date", new Date().toString()),
@@ -57,27 +57,5 @@ class DiawiUploadTask extends DefaultTask {
 
         outputStream.write(formattedOutput.bytes)
         outputStream.flush()
-    }
-
-    private OutputStream findOutputStream() {
-        def value = uploadExtension.output.stream
-        def backport = uploadExtension.standardOutput
-
-        if (value != null && backport == null) {
-            // new dsl used, ok
-            return value
-        }
-
-        if (value == null && backport != null) {
-            logger.warn("Property 'diawi.standartOutput' is deprecated and will be removed in future. Use diawi.output.stream instead")
-            return backport
-        }
-
-        if (value != backport) {
-            logger.warn("Property 'diawi.standartOutput' is deprecated and will be removed in future. Use diawi.output.stream instead. Value of 'diawi.standartOutput' ignored")
-            return value
-        }
-
-        throw new IllegalStateException("Failed to resolve output stream")
     }
 }
